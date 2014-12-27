@@ -7,10 +7,11 @@ public class Block : MonoBehaviour
     {
         Empty,
         Idle,
+        Sliding,
     }
 
+    public int X, Y;
     public BlockState State;
-    BlockRenderer blockRenderer;
     public int Type;
     public const int TypeCount = 6;
 
@@ -19,12 +20,6 @@ public class Block : MonoBehaviour
     {
         State = BlockState.Empty;
         Type = -1;
-        blockRenderer = GetComponent<BlockRenderer>();
-    }
-	
-    public void InitializeRenderer(int x, int y)
-    {
-        blockRenderer.Initialize(x, y);
     }
 
     public void Create(int type)

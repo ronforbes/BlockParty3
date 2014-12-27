@@ -4,40 +4,41 @@ using System.Collections.Generic;
 
 public class Board : MonoBehaviour
 {
-    Block[,] blocks;
+    public Block[,] Blocks;
     public Block BlockPrefab;
-    const int columns = 6;
-    const int rows = 10;
-    List<int> lastNewRowBlockTypes = new List<int>(columns);
-    List<int> secondToLastNewRowBlockTypes = new List<int>(columns);
+    public const int Columns = 6;
+    public const int Rows = 11;
+    List<int> lastNewRowBlockTypes = new List<int>(Columns);
+    List<int> secondToLastNewRowBlockTypes = new List<int>(Columns);
     int lastNewBlockType = 0, secondToLastNewBlockType = 0;
 
     // Use this for initialization
     void Awake()
     {
         // initialize the blocks
-        blocks = new Block[columns, rows];
-        for (int x = 0; x < columns; x++)
+        Blocks = new Block[Columns, Rows];
+        for (int x = 0; x < Columns; x++)
         {
-            for (int y = 0; y < rows; y++)
+            for (int y = 0; y < Rows; y++)
             {
-                blocks [x, y] = Instantiate(BlockPrefab, Vector3.zero, Quaternion.identity) as Block;
-                blocks [x, y].transform.parent = transform;
-                blocks [x, y].InitializeRenderer(x, y);
+                Blocks [x, y] = Instantiate(BlockPrefab, Vector3.zero, Quaternion.identity) as Block;
+                Blocks [x, y].transform.parent = transform;
+                Blocks [x, y].X = x;
+                Blocks [x, y].Y = y;
             }
         }
 
         // initialize the previous new rows' block types 
-        for (int x = 0; x < columns; x++)
+        for (int x = 0; x < Columns; x++)
         {
             lastNewRowBlockTypes.Add(0);
             secondToLastNewRowBlockTypes.Add(0);
         }
 
         // populate the board w/ blocks
-        int shortColumn = Random.Range(0, columns);
+        int shortColumn = Random.Range(0, Columns);
         
-        for (int x = columns - 1; x >= 0; x--)
+        for (int x = Columns - 1; x >= 0; x--)
         {
             int height = (x == shortColumn ? 2 : 7) + Random.Range(0, 2);
             
@@ -50,15 +51,15 @@ public class Board : MonoBehaviour
                 {
                     type = Random.Range(0, Block.TypeCount);
                     
-                    if (blocks [x, y + 1].State != Block.BlockState.Empty &&
-                        blocks [x, y + 1].Type == type)
+                    if (Blocks [x, y + 1].State != Block.BlockState.Empty &&
+                        Blocks [x, y + 1].Type == type)
                         continue;
                     
-                    if (x == columns - 1)
+                    if (x == Columns - 1)
                         break;
                     
-                    if (blocks [x + 1, y].State != Block.BlockState.Empty &&
-                        blocks [x + 1, y].Type == type)
+                    if (Blocks [x + 1, y].State != Block.BlockState.Empty &&
+                        Blocks [x + 1, y].Type == type)
                         continue;
                     
                     break;
@@ -72,7 +73,7 @@ public class Board : MonoBehaviour
                     lastNewRowBlockTypes [x] = type;
                 
                 // create the block
-                blocks [x, y].Create(type);
+                Blocks [x, y].Create(type);
             }
         }
     }
