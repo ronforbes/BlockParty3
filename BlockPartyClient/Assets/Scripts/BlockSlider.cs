@@ -12,6 +12,7 @@ public class BlockSlider : MonoBehaviour
 
     Block block;
     Board board;
+    MatchDetector matchDetector;
     public SlideDirection Direction;
     public Block.BlockState TargetState;
     public int TargetType;
@@ -23,6 +24,7 @@ public class BlockSlider : MonoBehaviour
     {
         block = GetComponent<Block>();
         board = GameObject.Find("Game").GetComponent<Board>();
+        matchDetector = GameObject.Find("Game").GetComponent<MatchDetector>();
     }
 	
     public void Slide(SlideDirection direction)
@@ -48,6 +50,11 @@ public class BlockSlider : MonoBehaviour
                 block.Type = TargetType;
 
                 Direction = SlideDirection.None;
+
+                if (block.State == Block.BlockState.Idle)
+                {
+                    matchDetector.RequestMatchDetection(block);
+                }
             }
         }
     }
