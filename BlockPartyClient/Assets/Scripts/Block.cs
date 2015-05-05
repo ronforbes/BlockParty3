@@ -8,6 +8,12 @@ public class Block : MonoBehaviour
         Empty,
         Idle,
         Sliding,
+        WaitingToFall,
+        Falling,
+        Matched,
+        WaitingToClear,
+        Clearing,
+        WaitingToEmpty,
     }
 
     public int X, Y;

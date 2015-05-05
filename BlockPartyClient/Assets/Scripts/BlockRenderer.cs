@@ -6,20 +6,27 @@ public class BlockRenderer : MonoBehaviour
 {
     Block block;
     BlockSlider slider;
+    BlockFaller faller;
+    BlockClearer clearer;
     SpriteRenderer spriteRenderer;
     public List<Sprite> Sprites;
+    public Sprite MatchedSprite;
 
     // Use this for initialization
     void Awake()
     {
         block = GetComponent<Block>();
         slider = GetComponent<BlockSlider>();
+        faller = GetComponent<BlockFaller>();
+        clearer = GetComponent<BlockClearer>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        float timePercentage = 0.0f;
+
         switch (block.State)
         {
             case Block.BlockState.Empty:
@@ -33,6 +40,7 @@ public class BlockRenderer : MonoBehaviour
             
                 spriteRenderer.enabled = true;
                 spriteRenderer.sprite = Sprites [block.Type];
+                spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
                 break;
 
             case Block.BlockState.Sliding:
@@ -47,7 +55,7 @@ public class BlockRenderer : MonoBehaviour
                     destination = transform.localScale.x;
                 }
 
-                float timePercentage = slider.Elapsed / BlockSlider.Duration;
+                timePercentage = slider.Elapsed / BlockSlider.Duration;
                 transform.position = Vector3.Lerp(new Vector3(block.X, block.Y, 0.0f), new Vector3(block.X + destination, block.Y, 0.0f), timePercentage);
 
                 if (block.Type == -1)
@@ -57,7 +65,56 @@ public class BlockRenderer : MonoBehaviour
                 {
                     spriteRenderer.enabled = true;
                     spriteRenderer.sprite = Sprites [block.Type];
+                    spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
                 }
+                break;
+
+            case Block.BlockState.WaitingToFall:
+                transform.position = new Vector3(block.X, block.Y, 0.0f);
+                spriteRenderer.enabled = true;
+                spriteRenderer.sprite = Sprites [block.Type];
+                spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+                break;
+
+            case Block.BlockState.Falling:
+                timePercentage = faller.Elapsed / BlockFaller.Duration;
+                transform.position = Vector3.Lerp(new Vector3(block.X, block.Y, 0.0f), new Vector3(block.X, block.Y - transform.localScale.y, 0.0f), timePercentage);
+
+                spriteRenderer.enabled = true;
+                spriteRenderer.sprite = Sprites [block.Type];
+                spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+                break;
+
+            case Block.BlockState.Matched:
+                transform.position = new Vector3(block.X, block.Y, 0.0f);
+
+                spriteRenderer.enabled = true;
+                spriteRenderer.sprite = MatchedSprite;
+                spriteRenderer.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+                break;
+
+            case Block.BlockState.WaitingToClear:
+                transform.position = new Vector3(block.X, block.Y, 0.0f);
+
+                spriteRenderer.enabled = true;
+                spriteRenderer.sprite = Sprites [block.Type];
+                spriteRenderer.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+                break;
+
+            case Block.BlockState.Clearing:
+                transform.position = new Vector3(block.X, block.Y, 0.0f);
+                
+                spriteRenderer.enabled = true;
+                spriteRenderer.sprite = Sprites [block.Type];
+
+                float alpha = 1.0f - clearer.Elapsed / BlockClearer.Duration;
+                spriteRenderer.color = new Color(0.5f, 0.5f, 0.5f, alpha);
+                break;
+
+            case Block.BlockState.WaitingToEmpty:
+                transform.position = new Vector3(block.X, block.Y, 0.0f);
+
+                spriteRenderer.enabled = false;
                 break;
         }
 

@@ -91,23 +91,23 @@ public class MatchDetector : MonoBehaviour
         
         int width = right - left;
         int height = top - bottom;
-        int magnitude = 0;
-        bool horizontalPattern = false;
-        bool verticalPattern = false;
+        int matchedBlockCount = 0;
+        bool horizontalMatch = false;
+        bool verticalMatch = false;
         
         if (width >= minimumMatchLength)
         {
-            horizontalPattern = true;
-            magnitude += width;
+            horizontalMatch = true;
+            matchedBlockCount += width;
         }
         
         if (height >= minimumMatchLength)
         {
-            verticalPattern = true;
-            magnitude += height;
+            verticalMatch = true;
+            matchedBlockCount += height;
         }
         
-        if (!horizontalPattern && !verticalPattern)
+        if (!horizontalMatch && !verticalMatch)
         {
             //block.GetComponent<BlockChaining>().EndChainInvolvement(chain);
             return;
@@ -119,33 +119,38 @@ public class MatchDetector : MonoBehaviour
         }*/
         
         // if pattern matches both directions
-        if (horizontalPattern && verticalPattern)
-            magnitude--;
-        
+        if (horizontalMatch && verticalMatch)
+            matchedBlockCount--;
+
+        int delayCounter = matchedBlockCount;
+
         // kill the pattern's blocks and look for touching garbage
-        //block.GetComponent<BlockDying>().StartDying(chain);
+        //block.GetComponent<BlockMatcher>().Match(matchedBlockCount, delayCounter);
+        //delayCounter--;
         
-        if (horizontalPattern)
+        if (horizontalMatch)
         {
             // kill the pattern's blocks
             for (int killX = left; killX < right; killX++)
             {
-                if (killX != block.X)
-                {
-                    //board.Blocks[killX, block.Y].GetComponent<BlockDying>().StartDying(chain);
-                }
+                //if (killX != block.X)
+                //{
+                board.Blocks [killX, block.Y].GetComponent<BlockMatcher>().Match(matchedBlockCount, delayCounter);
+                delayCounter--;
+                //}
             }
         }
         
-        if (verticalPattern)
+        if (verticalMatch)
         {
             // kill the pattern's blocks
-            for (int killY = bottom; killY < top; killY++)
+            for (int killY = top - 1; killY >= bottom; killY--)
             {
-                if (killY != block.Y)
-                {
-                    //board.Blocks[block.X, killY].GetComponent<BlockDying>().StartDying(chain);
-                }
+                //if (killY != block.Y)
+                //{
+                board.Blocks [block.X, killY].GetComponent<BlockMatcher>().Match(matchedBlockCount, delayCounter);
+                delayCounter--;
+                //}
             }
         }
         
