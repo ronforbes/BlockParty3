@@ -7,6 +7,8 @@ public class BoardRaiser : MonoBehaviour
     float raiseRate = 1.0f;
     public float Elapsed;
     public const float Duration = 10.0f;
+    bool forcingRaise;
+    const float forcedRaiseRate = 10.0f;
 
     // Use this for initialization
     void Awake()
@@ -14,10 +16,23 @@ public class BoardRaiser : MonoBehaviour
         board = GetComponent<Board>();
     }
 	
+    public void ForceRaise()
+    {
+        forcingRaise = true;
+    }
+
     // Update is called once per frame
     void Update()
     {
-        float rate = raiseRate;
+        float rate;
+
+        if (forcingRaise)
+        {
+            rate = forcedRaiseRate;
+        } else
+        {
+            rate = raiseRate;
+        }
 
         for (int x = 0; x < Board.Columns; x++)
         {
@@ -67,6 +82,8 @@ public class BoardRaiser : MonoBehaviour
             }
 
             board.CreateNewRow();
+
+            forcingRaise = false;
         }
     }
 }
