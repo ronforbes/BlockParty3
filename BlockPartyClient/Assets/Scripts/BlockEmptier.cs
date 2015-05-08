@@ -5,7 +5,7 @@ public class BlockEmptier : MonoBehaviour
 {
     Block block;
     float delayElapsed;
-    public const float DelayInterval = 1.0f; //0.25f;
+    public const float DelayInterval = 0.25f;
     public float DelayDuration;
 
     // Use this for initialization

@@ -5,9 +5,9 @@ public class BlockFaller : MonoBehaviour
 {
     Block block;
     float delayElapsed;
-    const float delayDuration = 1.0f; //0.25f;
+    const float delayDuration = 0.1f;
     public float Elapsed;
-    public const float Duration = 1.0f;
+    public const float Duration = 0.1f;
     public Block Target;
     public bool JustFell;
 

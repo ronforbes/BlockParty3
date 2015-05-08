@@ -17,7 +17,7 @@ public class BlockSlider : MonoBehaviour
     public Block.BlockState TargetState;
     public int TargetType;
     public float Elapsed;
-    public const float Duration = 1.0f;
+    public const float Duration = 0.1f;
 
     // Use this for initialization
     void Awake()

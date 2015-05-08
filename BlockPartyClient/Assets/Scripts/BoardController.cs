@@ -50,7 +50,10 @@ public class BoardController : MonoBehaviour
                 selectedBlock.State == Block.BlockState.Idle &&
                 selectedBlock.X - 1 >= 0 &&
                 (board.Blocks [selectedBlock.X - 1, selectedBlock.Y].State == Block.BlockState.Idle ||
-                board.Blocks [selectedBlock.X - 1, selectedBlock.Y].State == Block.BlockState.Empty))
+                board.Blocks [selectedBlock.X - 1, selectedBlock.Y].State == Block.BlockState.Empty) &&
+                (selectedBlock.Y + 1 < Board.Rows && 
+                board.Blocks [selectedBlock.X - 1, selectedBlock.Y + 1].State != Block.BlockState.Falling &&
+                board.Blocks [selectedBlock.X - 1, selectedBlock.Y + 1].State != Block.BlockState.WaitingToFall))
             {
                 leftBlock = board.Blocks [selectedBlock.X - 1, selectedBlock.Y];
                 rightBlock = selectedBlock;
@@ -62,7 +65,10 @@ public class BoardController : MonoBehaviour
                 selectedBlock.State == Block.BlockState.Idle &&
                 selectedBlock.X + 1 < Board.Columns &&
                 (board.Blocks [selectedBlock.X + 1, selectedBlock.Y].State == Block.BlockState.Idle ||
-                board.Blocks [selectedBlock.X + 1, selectedBlock.Y].State == Block.BlockState.Empty))
+                board.Blocks [selectedBlock.X + 1, selectedBlock.Y].State == Block.BlockState.Empty) &&
+                (selectedBlock.Y + 1 < Board.Rows &&
+                board.Blocks [selectedBlock.X + 1, selectedBlock.Y + 1].State != Block.BlockState.Falling &&
+                board.Blocks [selectedBlock.X + 1, selectedBlock.Y + 1].State != Block.BlockState.WaitingToFall))
             {
                 leftBlock = selectedBlock;
                 rightBlock = board.Blocks [selectedBlock.X + 1, selectedBlock.Y];

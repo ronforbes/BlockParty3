@@ -6,10 +6,10 @@ public class BlockClearer : MonoBehaviour
     Block block;
     BlockEmptier emptier;
     float delayElapsed;
-    public const float DelayInterval = 1.0f; //0.25f;
+    public const float DelayInterval = 0.25f;
     public float DelayDuration;
     public float Elapsed;
-    public const float Duration = 1.0f; //0.25f;
+    public const float Duration = 0.25f;
 
     // Use this for initialization
     void Awake()

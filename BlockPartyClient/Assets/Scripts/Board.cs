@@ -76,8 +76,32 @@ public class Board : MonoBehaviour
                 Blocks [x, y].Create(type);
             }
         }
+
+        CreateNewRow();
     }
-    
+
+    public void CreateNewRow()
+    {
+        for (int x = 0; x < Columns; x++)
+        {
+            int type = 0;
+
+            do
+            {
+                type = Random.Range(0, Block.TypeCount);
+            } while((type == lastNewBlockType && lastNewBlockType == secondToLastNewBlockType) ||
+                    (type == lastNewRowBlockTypes[x] && type == secondToLastNewRowBlockTypes[x]));
+
+            secondToLastNewRowBlockTypes [x] = lastNewRowBlockTypes [x];
+            lastNewRowBlockTypes [x] = type;
+
+            secondToLastNewBlockType = lastNewBlockType;
+            lastNewBlockType = type;
+
+            Blocks [x, 0].Create(type);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
