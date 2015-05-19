@@ -30,7 +30,7 @@ public class BoardGravity : MonoBehaviour
                 if (board.Blocks [x, y].State == Block.BlockState.Idle && emptyBlockDetected)
                 {
                     board.Blocks [x, y].GetComponent<BlockFaller>().Target = board.Blocks [x, y - 1];
-                    board.Blocks [x, y].GetComponent<BlockFaller>().Fall();
+                    board.Blocks [x, y].GetComponent<BlockFaller>().Fall(board.Blocks [x, y - 1].GetComponent<BlockChaining>().Chain);
                 }
 
                 if (board.Blocks [x, y].GetComponent<BlockFaller>().JustFell)
