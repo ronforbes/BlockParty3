@@ -17,11 +17,9 @@ public class BlockMatcher : MonoBehaviour
         emptier = GetComponent<BlockEmptier>();
     }
 	
-    public void Match(int matchedBlockCount, int delayCounter, Chain chain)
+    public void Match(int matchedBlockCount, int delayCounter)
     {
         block.State = Block.BlockState.Matched;
-
-        GetComponent<BlockChaining>().BeginChainInvolvement(chain);
 
         elapsed = 0.0f;
 
@@ -38,8 +36,6 @@ public class BlockMatcher : MonoBehaviour
 
             if (elapsed >= duration)
             {
-                GetComponent<BlockChaining>().Chain.DecrementInvolvement();
-
                 clearer.Clear();
             }
         }

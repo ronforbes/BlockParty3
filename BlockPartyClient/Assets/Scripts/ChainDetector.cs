@@ -4,56 +4,27 @@ using System.Collections.Generic;
 
 public class ChainDetector : MonoBehaviour
 {
-    Score score;
-    //public SignManager SignManager;
-    List<Chain> chains = new List<Chain>(chainCapacity);
-    const int chainCapacity = 8;
+    //int chainCount = 0;
+    Board board;
 
     void Awake()
     {
-        score = GetComponent<Score>();
-    }
-
-    public Chain CreateChain()
-    {
-        if (chains.Count == chains.Capacity)
-            return null;
-        
-        Chain chain = new Chain(/*SignManager*/);
-        chains.Add(chain);
-        
-        return chain;
-    }
-    
-    public void DeleteChain(Chain chain)
-    {
-        chains.Remove(chain);
+        board = GetComponent<Board>();
     }
     
     void Update()
     {
-        List<Chain> chainsToRemove = new List<Chain>();
-        
-        foreach (Chain chain in chains)
+        //bool stopChain = true;
+
+        for (int x = 0; x < Board.Columns; x++)
         {
-            if (chain.InvolvementCount == 0)
+            for (int y = Board.Rows - 1; y >= 0; y--)
             {
-                chainsToRemove.Add(chain);
-            } else
-            {
-                if (chain.MatchJustOccurred)
+                if (board.Blocks [x, y].GetComponent<BlockChaining>().JustEmptied)
                 {
-                    // notify the score
-                    score.ReportChain(chain);
-                    
-                    chain.MatchJustOccurred = false;
+                    //for(int chainEligibleRow = y + 1; chainEligibleRow >= 0)
                 }
             }
-        }
-        
-        foreach (Chain chain in chainsToRemove)
-        {
-            DeleteChain(chain);
         }
     }
 }

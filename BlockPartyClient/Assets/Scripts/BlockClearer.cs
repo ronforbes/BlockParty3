@@ -5,6 +5,7 @@ public class BlockClearer : MonoBehaviour
 {
     Block block;
     BlockEmptier emptier;
+    Stats stats;
     float delayElapsed;
     public const float DelayInterval = 0.25f;
     public float DelayDuration;
@@ -16,6 +17,7 @@ public class BlockClearer : MonoBehaviour
     {
         block = GetComponent<Block>();
         emptier = GetComponent<BlockEmptier>();
+        stats = GameObject.Find("Game").GetComponent<Stats>();
     }
 	
     public void Clear()
@@ -30,6 +32,8 @@ public class BlockClearer : MonoBehaviour
         block.State = Block.BlockState.Clearing;
 
         Elapsed = 0.0f;
+
+        stats.ScoreMatch();
     }
 
     // Update is called once per frame

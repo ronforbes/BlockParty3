@@ -17,16 +17,11 @@ public class BlockFaller : MonoBehaviour
         block = GetComponent<Block>();
     }
 	
-    public void Fall(Chain chain = null)
+    public void Fall()
     {
         block.State = Block.BlockState.WaitingToFall;
 
         delayElapsed = 0.0f;
-
-        if (chain != null)
-        {
-            GetComponent<BlockChaining>().BeginChainInvolvement(chain);
-        }
     }
 
     public void ContinueFalling()

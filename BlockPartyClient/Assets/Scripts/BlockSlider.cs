@@ -11,7 +11,6 @@ public class BlockSlider : MonoBehaviour
     }
 
     Block block;
-    Board board;
     MatchDetector matchDetector;
     public SlideDirection Direction;
     public Block.BlockState TargetState;
@@ -23,7 +22,6 @@ public class BlockSlider : MonoBehaviour
     void Awake()
     {
         block = GetComponent<Block>();
-        board = GameObject.Find("Game").GetComponent<Board>();
         matchDetector = GameObject.Find("Game").GetComponent<MatchDetector>();
     }
 	

@@ -5,12 +5,10 @@ using System.Collections.Generic;
 public class MatchDetection
 {
     public Block Block;
-    public Chain Chain;
 
-    public MatchDetection(Block block, Chain chain)
+    public MatchDetection(Block block)
     {
         Block = block;
-        Chain = chain;
     }
 }
 
@@ -18,7 +16,8 @@ public class MatchDetector : MonoBehaviour
 {
     List<MatchDetection> matchDetections;
     Board board;
-    ChainDetector chainDetector;
+    //ChainDetector chainDetector;
+    Stats stats;
     public const int MinimumMatchLength = 3;
 
     // Use this for initialization
@@ -26,12 +25,13 @@ public class MatchDetector : MonoBehaviour
     {
         matchDetections = new List<MatchDetection>();
         board = GetComponent<Board>();
-        chainDetector = GetComponent<ChainDetector>();
+        //chainDetector = GetComponent<ChainDetector>();
+        stats = GetComponent<Stats>();
     }
 	
-    public void RequestMatchDetection(Block block, Chain chain = null)
+    public void RequestMatchDetection(Block block)
     {
-        matchDetections.Add(new MatchDetection(block, chain));
+        matchDetections.Add(new MatchDetection(block));
     }
 
     // Update is called once per frame
@@ -45,12 +45,12 @@ public class MatchDetector : MonoBehaviour
             // ensure that the block is still idle
             if (detection.Block.State == Block.BlockState.Idle)
             {
-                DetectMatch(detection.Block, detection.Block.GetComponent<BlockChaining>().Chain != null ? detection.Block.GetComponent<BlockChaining>().Chain : detection.Chain);
+                DetectMatch(detection.Block);
             }
         }
     }
 
-    void DetectMatch(Block block, Chain chain)
+    void DetectMatch(Block block)
     {
         // look in four directions for matching blocks   
         int left = block.X;
@@ -113,13 +113,7 @@ public class MatchDetector : MonoBehaviour
         
         if (!horizontalMatch && !verticalMatch)
         {
-            block.GetComponent<BlockChaining>().EndChainInvolvement(chain);
             return;
-        }
-        
-        if (chain == null)
-        {
-            chain = chainDetector.CreateChain();
         }
         
         // if pattern matches both directions
@@ -135,11 +129,12 @@ public class MatchDetector : MonoBehaviour
             // kill the pattern's blocks
             for (int killX = left; killX < right; killX++)
             {
-                //if (killX != block.X)
-                //{
-                board.Blocks [killX, block.Y].GetComponent<BlockMatcher>().Match(matchedBlockCount, delayCounter, chain);
+                board.Blocks [killX, block.Y].GetComponent<BlockMatcher>().Match(matchedBlockCount, delayCounter);
                 delayCounter--;
-                //}
+                if (board.Blocks [killX, block.Y].GetComponent<BlockChaining>().ChainEligible)
+                {
+                    //incrementChain = true;
+                }
             }
         }
         
@@ -148,14 +143,25 @@ public class MatchDetector : MonoBehaviour
             // kill the pattern's blocks
             for (int killY = top - 1; killY >= bottom; killY--)
             {
-                //if (killY != block.Y)
-                //{
-                board.Blocks [block.X, killY].GetComponent<BlockMatcher>().Match(matchedBlockCount, delayCounter, chain);
+                board.Blocks [block.X, killY].GetComponent<BlockMatcher>().Match(matchedBlockCount, delayCounter);
                 delayCounter--;
-                //}
+                if (board.Blocks [block.X, killY].GetComponent<BlockChaining>().ChainEligible)
+                {
+                    //incrementChain = true;
+                }
             }
         }
-        
-        chain.ReportMatch(matchedBlockCount, block);
+
+        // handle combos
+        if (matchedBlockCount > 3)
+        {
+            stats.ScoreCombo(matchedBlockCount);
+        }
+
+        /*if(incrementChain)
+        {
+            chainCount++;
+            Stats.ScoreChain(chainCount);
+        }*/
     }
 }
