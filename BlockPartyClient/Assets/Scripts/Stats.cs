@@ -10,9 +10,9 @@ public class Stats : MonoBehaviour
     public float TimeRemaining = 120.0f;
     public int Matches = 0;
     public int Combos = 0;
-    public Dictionary<int, int> ComboBreakdown = new Dictionary<int, int>();
+    public Dictionary<int, int> ComboLengths = new Dictionary<int, int>();
     public int Chains = 0;
-    public Dictionary<int, int> ChainBreakdown = new Dictionary<int, int>();
+    public Dictionary<int, int> ChainLengths = new Dictionary<int, int>();
 
     const int matchValue = 1;
     const int comboValue = 10;
@@ -25,12 +25,12 @@ public class Stats : MonoBehaviour
     {
         for (int comboLength = 4; comboLength < Board.Rows * Board.Columns; comboLength++)
         {
-            ComboBreakdown.Add(comboLength, 0);
+            ComboLengths.Add(comboLength, 0);
         }
 
         for (int chainLength = 2; chainLength < Board.Rows * Board.Columns / 3; chainLength++)
         {
-            ChainBreakdown.Add(chainLength, 0);
+            ChainLengths.Add(chainLength, 0);
         }
 
         scoreText = GameObject.Find("Score Value").GetComponent<Text>();
@@ -47,11 +47,11 @@ public class Stats : MonoBehaviour
         Score += matchValue * comboValue;
         Combos++;
 
-        if (!ComboBreakdown.ContainsKey(comboLength))
+        if (!ComboLengths.ContainsKey(comboLength))
         {
-            ComboBreakdown.Add(comboLength, 0);
+            ComboLengths.Add(comboLength, 0);
         }
-        ComboBreakdown [comboLength]++;
+        ComboLengths [comboLength]++;
     }
 
     public void ScoreChain(int chainLength)
@@ -59,11 +59,11 @@ public class Stats : MonoBehaviour
         Score += chainLength * chainValue;
         Chains++;
 
-        if (!ChainBreakdown.ContainsKey(chainLength))
+        if (!ChainLengths.ContainsKey(chainLength))
         {
-            ChainBreakdown.Add(chainLength, 0);
+            ChainLengths.Add(chainLength, 0);
         }
-        ChainBreakdown [chainLength]++;
+        ChainLengths [chainLength]++;
     }
     
     // Update is called once per frame
@@ -75,4 +75,4 @@ public class Stats : MonoBehaviour
 
         scoreText.text = Score.ToString();
     }
-}
+} 

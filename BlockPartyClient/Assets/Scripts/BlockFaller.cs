@@ -57,10 +57,12 @@ public class BlockFaller : MonoBehaviour
             {
                 Target.State = Block.BlockState.Falling;
                 Target.Type = block.Type;
+                Target.GetComponent<BlockChaining>().ChainEligible = GetComponent<BlockChaining>().ChainEligible;
                 Target.GetComponent<BlockFaller>().JustFell = true;
 
                 block.State = Block.BlockState.Empty;
                 block.Type = -1;
+                GetComponent<BlockChaining>().ChainEligible = false;
             }
         }
     }

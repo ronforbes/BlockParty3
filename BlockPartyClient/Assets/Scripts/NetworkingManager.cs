@@ -40,7 +40,7 @@ public static class NetworkingManager
                 receiveThread.Start();
             }
             
-            Send(new NetworkMessage(NetworkMessage.MessageType.ClientCreateUser, UserManager.Name));
+            Send(new NetworkMessage(NetworkMessage.MessageType.ClientCreateUser, UserManager.Instance.Name));
         }
     }
     

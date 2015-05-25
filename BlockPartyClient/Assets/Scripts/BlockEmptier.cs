@@ -4,6 +4,7 @@ using System.Collections;
 public class BlockEmptier : MonoBehaviour
 {
     Block block;
+    BlockChaining chaining;
     float delayElapsed;
     public const float DelayInterval = 0.25f;
     public float DelayDuration;
@@ -12,6 +13,7 @@ public class BlockEmptier : MonoBehaviour
     void Awake()
     {
         block = GetComponent<Block>();
+        chaining = GetComponent<BlockChaining>();
     }
 	
     public void Empty()
@@ -25,6 +27,7 @@ public class BlockEmptier : MonoBehaviour
     {
         block.State = Block.BlockState.Empty;
         block.Type = -1;
+        chaining.JustEmptied = true;
     }
 
     // Update is called once per frame

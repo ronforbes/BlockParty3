@@ -1,13 +1,35 @@
 using UnityEngine;
+using UnityEngine.UI;
+using Facebook.MiniJSON;
+using System.Collections.Generic;
+using System.Collections;
 
-public static class UserManager
+public class UserManager : MonoBehaviour
 {
-    static bool initialized;
-    static bool loggedIn;
-    public static string Name = "Guest";
-    public static string FacebookId;
+    private static UserManager instance;
+    public static UserManager Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = GameObject.FindObjectOfType<UserManager>();
+
+                // tell unity not to destroy this object when loading a new scene
+                DontDestroyOnLoad(instance.gameObject);
+            }
+
+            return instance;
+        }
+    }
+
+    bool initialized;
+    bool loggedIn;
+    public string Name = "Guest";
+    public string FacebookId;
+    public Texture2D Picture;
     
-    public static bool Initialized
+    public bool Initialized
     {
         get
         {
@@ -15,47 +37,70 @@ public static class UserManager
         }
     }
     
-    public static bool LoggedIn
+    public bool LoggedIn
     {
         get
         {
             return loggedIn;
         }
     }
-    
-    public static void Initialize()
+
+    void Awake()
     {
-        //FB.Init(OnInitComplete);
+        if (instance == null)
+        {
+            // if i'm the first instance, make me the singleton
+            instance = this;
+            DontDestroyOnLoad(this);
+        } else
+        {
+            // if a singleton already exists and you find another reference in scene, destroy it
+            if (this != instance)
+            {
+                Destroy(this.gameObject);
+            }
+        }
+    }
+
+    public void Initialize()
+    {
+        FB.Init(OnInitComplete);
     }
     
-    static void OnInitComplete()
+    void OnInitComplete()
     {
         initialized = true;
     }
     
-    public static void Login()
+    public void Login()
     {
-        //FB.Login ("public_profile", OnLogin);
+        FB.Login("public_profile", OnLogin);
     }
     
-    static void OnLogin(/*FBResult result*/)
+    void OnLogin(FBResult result)
     {
         loggedIn = true;
-        
-        //FB.API ("/me", Facebook.HttpMethod.GET, OnGetMe);
+
+        // get the user's name
+        FB.API("/me", Facebook.HttpMethod.GET, OnGetMe);
+
+        // get the user's profile picture
+        StartCoroutine("LoadProfilePicture", Picture);
     }
     
-    static void OnGetMe(/*FBResult result*/)
+    void OnGetMe(FBResult result)
     {
-        //var dictionary = Json.Deserialize(result.Text) as Dictionary<string, object>;
-        //Name = dictionary["name"] as string;
-        //FacebookId = dictionary["id"] as string;
-        
-        Debug.Log(Name + " (" + FacebookId + ")");
+        var dictionary = Json.Deserialize(result.Text) as Dictionary<string, object>;
+        Name = dictionary ["name"] as string;
+        FacebookId = dictionary ["id"] as string;
     }
     
-    public static void SetProfilePicture(Texture2D texture)
+    IEnumerator LoadProfilePicture()
     {
-        
+        WWW www = new WWW("https://graph.facebook.com/me/picture?access_token=" + FB.AccessToken);
+        yield return www;
+        Picture = new Texture2D(128, 128, TextureFormat.DXT1, false);
+        //guiTexture.texture = texture;
+        www.LoadImageIntoTexture(Picture);
     }
 }

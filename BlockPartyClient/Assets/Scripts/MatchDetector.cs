@@ -16,7 +16,7 @@ public class MatchDetector : MonoBehaviour
 {
     List<MatchDetection> matchDetections;
     Board board;
-    //ChainDetector chainDetector;
+    ChainDetector chainDetector;
     Stats stats;
     public const int MinimumMatchLength = 3;
 
@@ -25,7 +25,7 @@ public class MatchDetector : MonoBehaviour
     {
         matchDetections = new List<MatchDetection>();
         board = GetComponent<Board>();
-        //chainDetector = GetComponent<ChainDetector>();
+        chainDetector = GetComponent<ChainDetector>();
         stats = GetComponent<Stats>();
     }
 	
@@ -52,6 +52,8 @@ public class MatchDetector : MonoBehaviour
 
     void DetectMatch(Block block)
     {
+        bool incrementChain = false;
+
         // look in four directions for matching blocks   
         int left = block.X;
         while (left > 0)
@@ -133,7 +135,7 @@ public class MatchDetector : MonoBehaviour
                 delayCounter--;
                 if (board.Blocks [killX, block.Y].GetComponent<BlockChaining>().ChainEligible)
                 {
-                    //incrementChain = true;
+                    incrementChain = true;
                 }
             }
         }
@@ -147,7 +149,7 @@ public class MatchDetector : MonoBehaviour
                 delayCounter--;
                 if (board.Blocks [block.X, killY].GetComponent<BlockChaining>().ChainEligible)
                 {
-                    //incrementChain = true;
+                    incrementChain = true;
                 }
             }
         }
@@ -158,10 +160,9 @@ public class MatchDetector : MonoBehaviour
             stats.ScoreCombo(matchedBlockCount);
         }
 
-        /*if(incrementChain)
+        if (incrementChain)
         {
-            chainCount++;
-            Stats.ScoreChain(chainCount);
-        }*/
+            chainDetector.IncrementChain();
+        }
     }
 }
