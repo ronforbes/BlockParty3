@@ -6,7 +6,7 @@ using System.Collections;
 
 public class UserManager : MonoBehaviour
 {
-    private static UserManager instance;
+    static UserManager instance;
     public static UserManager Instance
     {
         get
@@ -24,7 +24,7 @@ public class UserManager : MonoBehaviour
     }
 
     bool initialized;
-    bool loggedIn;
+    bool signedIn;
     public string Name = "Guest";
     public string FacebookId;
     public Texture2D Picture;
@@ -37,11 +37,11 @@ public class UserManager : MonoBehaviour
         }
     }
     
-    public bool LoggedIn
+    public bool SignedIn
     {
         get
         {
-            return loggedIn;
+            return signedIn;
         }
     }
 
@@ -72,14 +72,14 @@ public class UserManager : MonoBehaviour
         initialized = true;
     }
     
-    public void Login()
+    public void SignIn()
     {
-        FB.Login("public_profile", OnLogin);
+        FB.Login("public_profile", OnSignIn);
     }
     
-    void OnLogin(FBResult result)
+    void OnSignIn(FBResult result)
     {
-        loggedIn = true;
+        signedIn = true;
 
         // get the user's name
         FB.API("/me", Facebook.HttpMethod.GET, OnGetMe);

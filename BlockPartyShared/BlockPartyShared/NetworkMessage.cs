@@ -11,6 +11,7 @@ namespace BlockPartyShared
 			ServerGameState,
 			ServerLeaderboard,
 			ClientCreateUser,
+			ClientSignInUser,
 			ClientResults
 		}
 		
@@ -34,5 +35,23 @@ namespace BlockPartyShared
 		public NetworkMessage Message { get; set; }
 		
 		public TcpClient Sender { get; set; }
+	}
+
+	[Serializable]
+	public class ServerGameStateContent
+	{
+		public string GameState;
+		public float TimeRemaining;
+
+		public ServerGameStateContent (string gameState, float timeRemaining)
+		{
+			GameState = gameState;
+			TimeRemaining = timeRemaining;
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[ServerGameStateContent: GameStatae={0}, TimeRemaining={1}", GameState.ToString (), TimeRemaining.ToString ());
+		}
 	}
 }

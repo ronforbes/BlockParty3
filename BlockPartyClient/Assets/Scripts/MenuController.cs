@@ -1,58 +1,66 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using BlockPartyShared;
 
 public class MenuController : MonoBehaviour
 {
-    Button loginButton;
+    GameStateTimer timer;
+    Button signInButton;
     RawImage userImage;
-    Text welcomeText;
+    Text greetingText;
     Text userNameText;
+    bool loadGame, loadLobby;
 
     // Use this for initialization
-    void Start()
+    void Awake()
     {
-        loginButton = GameObject.Find("Login Button").GetComponent<Button>();
+        timer = GameObject.Find("Game State Timer").GetComponent<GameStateTimer>();
+        signInButton = GameObject.Find("Sign In Button").GetComponent<Button>();
         userImage = GameObject.Find("User Image").GetComponent<RawImage>();
-        welcomeText = GameObject.Find("Welcome Text").GetComponent<Text>();
+        greetingText = GameObject.Find("Greeting Text").GetComponent<Text>();
         userNameText = GameObject.Find("User Name Text").GetComponent<Text>();
-
+        
         if (!UserManager.Instance.Initialized)
         {
             UserManager.Instance.Initialize();
         }
     }
-	
+
     public void Play()
     {
-        Application.LoadLevel("Game");
+        timer.Playing = true;
+        if (timer.State == GameStateTimer.GameState.Lobby)
+        {
+            Application.LoadLevel("Lobby");
+        }
+        if (timer.State == GameStateTimer.GameState.Game)
+        {
+            Application.LoadLevel("Game");
+        }
     }
 
-    public void Login()
+    public void SignIn()
     {
-        UserManager.Instance.Login();
+        UserManager.Instance.SignIn();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (UserManager.Instance.LoggedIn)
+        if (UserManager.Instance.SignedIn)
         {
-            loginButton.gameObject.SetActive(false);
-
+            signInButton.gameObject.SetActive(false);
             userImage.gameObject.SetActive(true);
             userImage.texture = UserManager.Instance.Picture;
-
-            welcomeText.gameObject.SetActive(true);
-
-            userNameText.gameObject.SetActive(true);
+            greetingText.text = "Welcome back";
             userNameText.text = UserManager.Instance.Name;
         } else
         {
-            loginButton.gameObject.SetActive(true);
+            signInButton.gameObject.SetActive(true);
             userImage.gameObject.SetActive(false);
-            welcomeText.gameObject.SetActive(false);
-            userNameText.gameObject.SetActive(false);
+            greetingText.text = "Hello";
+            userNameText.text = "Guest";
         }
     }
 }

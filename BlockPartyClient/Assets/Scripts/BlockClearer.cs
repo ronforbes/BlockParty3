@@ -1,18 +1,54 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Component enabling blocks to be cleared from the board
+/// </summary>
 public class BlockClearer : MonoBehaviour
 {
+    /// <summary>
+    /// The block to be cleared.
+    /// </summary>
     Block block;
+
+    /// <summary>
+    /// The block's emptying component
+    /// </summary>
     BlockEmptier emptier;
+
+    /// <summary>
+    /// The stats tracking component
+    /// </summary>
     Stats stats;
+
+    /// <summary>
+    /// The amount of time that the block has been waiting to clear
+    /// </summary>
     float delayElapsed;
+
+    /// <summary>
+    /// The interval of time that blocks are delayed from clearing
+    /// </summary>
     public const float DelayInterval = 0.25f;
+
+    /// <summary>
+    /// The duration of the delay before blocks are cleared
+    /// </summary>
     public float DelayDuration;
+
+    /// <summary>
+    /// The amount of time that a block has been clearing
+    /// </summary>
     public float Elapsed;
+
+    /// <summary>
+    /// The duration of time taken to clear a block
+    /// </summary>
     public const float Duration = 0.25f;
 
-    // Use this for initialization
+    /// <summary>
+    /// Initializes the clearer by getting the associated block, emptier, and stats tracker
+    /// </summary>
     void Awake()
     {
         block = GetComponent<Block>();
@@ -20,6 +56,9 @@ public class BlockClearer : MonoBehaviour
         stats = GameObject.Find("Game").GetComponent<Stats>();
     }
 	
+    /// <summary>
+    /// Starts clearing the block from the board
+    /// </summary>
     public void Clear()
     {
         block.State = Block.BlockState.WaitingToClear;
@@ -27,16 +66,9 @@ public class BlockClearer : MonoBehaviour
         delayElapsed = 0.0f;
     }
 
-    void FinishClearing()
-    {
-        block.State = Block.BlockState.Clearing;
-
-        Elapsed = 0.0f;
-
-        stats.ScoreMatch();
-    }
-
-    // Update is called once per frame
+    /// <summary>
+    /// Waits for the clear delay and then clears the block from the board
+    /// </summary>
     void Update()
     {
         if (block.State == Block.BlockState.WaitingToClear)
@@ -45,7 +77,11 @@ public class BlockClearer : MonoBehaviour
 
             if (delayElapsed >= DelayDuration)
             {
-                FinishClearing();
+                block.State = Block.BlockState.Clearing;
+                
+                Elapsed = 0.0f;
+                
+                stats.ScoreMatch();
             }
         }
 

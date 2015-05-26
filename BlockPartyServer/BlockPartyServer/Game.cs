@@ -11,8 +11,7 @@ namespace BlockPartyServer
 		enum GameState
 		{
 			Lobby,
-			Gameplay,
-			Postgame,
+			Game,
 		}
 
 		GameState state;
@@ -20,11 +19,8 @@ namespace BlockPartyServer
 		TimeSpan lobbyElapsed;
 		TimeSpan lobbyDuration = TimeSpan.FromSeconds (10);
 
-		TimeSpan gameplayElapsed;
-		TimeSpan gameplayDuration = TimeSpan.FromSeconds (10);
-
-		TimeSpan postgameElapsed;
-		TimeSpan postgameDuration = TimeSpan.FromSeconds (10);
+		TimeSpan gameElapsed;
+		TimeSpan gameDuration = TimeSpan.FromSeconds (10);
 
 		Timer updateTimer;
 		const int updatesPerSecond = 1;
@@ -51,35 +47,58 @@ namespace BlockPartyServer
 		{
 			switch (e.Message.Type) {
 			case NetworkMessage.MessageType.ClientCreateUser:
-				userManager.Users.Add ((string)e.Message.Content, new User ((string)e.Message.Content, e.Sender));
+				userManager.Users.Add (e.Sender.Client.RemoteEndPoint.ToString (), new User ((string)e.Message.Content, e.Sender));
+				networkingManager.Send (userManager.Users [e.Sender.Client.RemoteEndPoint.ToString ()].Client, CreateGameStateMessage ());
 				break;
+
+			case NetworkMessage.MessageType.ClientSignInUser:
+				userManager.Users [e.Sender.Client.RemoteEndPoint.ToString ()].Name = (string)e.Message.Content;
+				break;
+
 			case NetworkMessage.MessageType.ClientResults:
 				gameResults.Add (userManager.GetUserByTcpClient (e.Sender).Name, (int)e.Message.Content);
 				break;
 			}
 		}
-		
+
+		NetworkMessage CreateGameStateMessage ()
+		{
+			float timeRemaining = 0.0f;
+			
+			if (state == GameState.Game) {
+				timeRemaining = (float)(gameDuration.TotalSeconds - gameElapsed.TotalSeconds);
+			}
+			
+			if (state == GameState.Lobby) {
+				timeRemaining = (float)(lobbyDuration.TotalSeconds - lobbyElapsed.TotalSeconds);
+			}
+			
+			ServerGameStateContent content = new ServerGameStateContent (state.ToString (), timeRemaining);
+			
+			NetworkMessage message = new NetworkMessage (NetworkMessage.MessageType.ServerGameState, content);
+			Console.WriteLine ("Created network message: type=ServerGameState, content=" + content.ToString ());
+
+			return message;
+		}
+
 		void SetGameState (GameState state)
 		{
 			Console.WriteLine ("Setting game state to " + state.ToString ());
 			this.state = state;
-			
-			NetworkMessage message = new NetworkMessage (NetworkMessage.MessageType.ServerGameState, state.ToString ());
-			networkingManager.Broadcast (message);
+
+
 			
 			switch (state) {
-			case GameState.Gameplay:
-				gameplayElapsed = TimeSpan.Zero;
+			case GameState.Game:
+				gameElapsed = TimeSpan.Zero;
 				gameResults.Clear ();
-				break;
-				
-			case GameState.Postgame:
-				postgameElapsed = TimeSpan.Zero;
+				networkingManager.Broadcast (CreateGameStateMessage ());
 				break;
 				
 			case GameState.Lobby:
 				lobbyElapsed = TimeSpan.Zero;
-				
+				networkingManager.Broadcast (CreateGameStateMessage ());
+
 				Console.WriteLine ("gameResults.Count=" + gameResults.Count);
 				List<KeyValuePair<string, int>> sortedGameResults = gameResults.ToList ();
 				sortedGameResults.Sort ((firstPair, nextPair) => {
@@ -104,22 +123,14 @@ namespace BlockPartyServer
 				lobbyElapsed += gameTime.Elapsed;
 				
 				if (lobbyElapsed >= lobbyDuration) {
-					SetGameState (GameState.Gameplay);
+					SetGameState (GameState.Game);
 				}
 				break;
 				
-			case GameState.Gameplay:
-				gameplayElapsed += gameTime.Elapsed;
+			case GameState.Game:
+				gameElapsed += gameTime.Elapsed;
 				
-				if (gameplayElapsed >= gameplayDuration) {
-					SetGameState (GameState.Postgame);
-				}
-				break;
-				
-			case GameState.Postgame:
-				postgameElapsed += gameTime.Elapsed;
-				
-				if (postgameElapsed >= postgameDuration) {
+				if (gameElapsed >= gameDuration) {
 					SetGameState (GameState.Lobby);
 				}
 				break;
