@@ -27,17 +27,16 @@ public class MenuController : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        timer.Playing = false;
+    }
+
     public void Play()
     {
         timer.Playing = true;
-        if (timer.State == GameStateTimer.GameState.Lobby)
-        {
-            Application.LoadLevel("Lobby");
-        }
-        if (timer.State == GameStateTimer.GameState.Game)
-        {
-            Application.LoadLevel("Game");
-        }
+        string level = timer.State.ToString();
+        Application.LoadLevel(level);
     }
 
     public void SignIn()

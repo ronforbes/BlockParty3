@@ -64,7 +64,10 @@ public class UserManager : MonoBehaviour
 
     public void Initialize()
     {
-        FB.Init(OnInitComplete);
+        if (!Initialized)
+        {
+            FB.Init(OnInitComplete);
+        }
     }
     
     void OnInitComplete()
@@ -74,7 +77,10 @@ public class UserManager : MonoBehaviour
     
     public void SignIn()
     {
-        FB.Login("public_profile", OnSignIn);
+        if (!SignedIn)
+        {
+            FB.Login("public_profile", OnSignIn);
+        }
     }
     
     void OnSignIn(FBResult result)
@@ -100,7 +106,6 @@ public class UserManager : MonoBehaviour
         WWW www = new WWW("https://graph.facebook.com/me/picture?access_token=" + FB.AccessToken);
         yield return www;
         Picture = new Texture2D(128, 128, TextureFormat.DXT1, false);
-        //guiTexture.texture = texture;
         www.LoadImageIntoTexture(Picture);
     }
 }

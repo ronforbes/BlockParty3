@@ -6,18 +6,16 @@ public class ChainDetector : MonoBehaviour
 {
     int chainLength = 0;
     Board board;
-    Stats stats;
 
     void Awake()
     {
         board = GetComponent<Board>();
-        stats = GetComponent<Stats>();
     }
 
     public void IncrementChain()
     {
         chainLength++;
-        stats.ScoreChain(chainLength);
+        StatsTracker.Instance.ScoreChain(chainLength);
     }
 
     void Update()
@@ -71,7 +69,7 @@ public class ChainDetector : MonoBehaviour
 
             if (chainLength > 1)
             {
-                stats.ScoreChain(chainLength);
+                StatsTracker.Instance.ScoreChain(chainLength);
             }
 
             chainLength = 1;

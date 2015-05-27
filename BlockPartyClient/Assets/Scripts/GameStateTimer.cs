@@ -6,8 +6,10 @@ public class GameStateTimer : MonoBehaviour
 {
     public enum GameState
     {
+        None,
         Lobby,
-        Game
+        Game,
+        Results,       
     }
 
     static GameStateTimer instance;
@@ -28,9 +30,9 @@ public class GameStateTimer : MonoBehaviour
     }
 
     public GameState State;
+    GameState stateToLoad;
     public bool Playing;
     public float TimeRemaining;
-    bool loadGame, loadLobby;
 
     void Awake()
     {
@@ -68,22 +70,25 @@ public class GameStateTimer : MonoBehaviour
             TimeRemaining = content.TimeRemaining;
             switch (content.GameState)
             {   
-                case "Game":
-                    State = GameState.Game;
-                    if (Playing)
-                    {
-                        loadGame = true;
-                    }
-                    break;
-
                 case "Lobby":              
                     State = GameState.Lobby;
-                    if (Playing)
-                    {
-                        loadLobby = true;
-                    }
+                    Leaderboard.Instance.SortedLeaderboard = null;
                     break;
-            }            
+
+                case "Game":
+                    State = GameState.Game;
+                    StatsTracker.Instance.Reset();
+                    break;
+
+                case "Results":
+                    State = GameState.Results;
+                    break;
+            }
+
+            if (Playing)
+            {
+                stateToLoad = State;
+            }
         }
     }
 
@@ -92,16 +97,11 @@ public class GameStateTimer : MonoBehaviour
     {
         TimeRemaining -= Time.deltaTime;
 
-        if (loadGame)
+        if (Playing && stateToLoad != GameState.None)
         {
-            loadGame = false;
-            Application.LoadLevel("Game");
-        }
-
-        if (loadLobby)
-        {
-            loadLobby = false;
-            Application.LoadLevel("Lobby");
+            string level = stateToLoad.ToString();
+            stateToLoad = GameState.None;
+            Application.LoadLevel(level);
         }
     }
 }

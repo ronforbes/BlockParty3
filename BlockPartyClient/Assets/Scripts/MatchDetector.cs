@@ -17,7 +17,6 @@ public class MatchDetector : MonoBehaviour
     List<MatchDetection> matchDetections;
     Board board;
     ChainDetector chainDetector;
-    Stats stats;
     public const int MinimumMatchLength = 3;
 
     // Use this for initialization
@@ -26,7 +25,6 @@ public class MatchDetector : MonoBehaviour
         matchDetections = new List<MatchDetection>();
         board = GetComponent<Board>();
         chainDetector = GetComponent<ChainDetector>();
-        stats = GetComponent<Stats>();
     }
 	
     public void RequestMatchDetection(Block block)
@@ -157,7 +155,7 @@ public class MatchDetector : MonoBehaviour
         // handle combos
         if (matchedBlockCount > 3)
         {
-            stats.ScoreCombo(matchedBlockCount);
+            StatsTracker.Instance.ScoreCombo(matchedBlockCount);
         }
 
         if (incrementChain)

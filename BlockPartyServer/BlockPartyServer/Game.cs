@@ -12,6 +12,7 @@ namespace BlockPartyServer
 		{
 			Lobby,
 			Game,
+			Results
 		}
 
 		GameState state;
@@ -22,6 +23,9 @@ namespace BlockPartyServer
 		TimeSpan gameElapsed;
 		TimeSpan gameDuration = TimeSpan.FromSeconds (10);
 
+		TimeSpan resultsElapsed;
+		TimeSpan resultsDuration = TimeSpan.FromSeconds (10);
+
 		Timer updateTimer;
 		const int updatesPerSecond = 1;
 
@@ -31,7 +35,8 @@ namespace BlockPartyServer
 		UserManager userManager = new UserManager ();
 		
 		Dictionary<string, int> gameResults = new Dictionary<string, int> ();
-		
+		bool processedResults;
+
 		public Game ()
 		{
 			networkingManager.MessageReceived += networkingManager_MessageReceived;
@@ -47,7 +52,9 @@ namespace BlockPartyServer
 		{
 			switch (e.Message.Type) {
 			case NetworkMessage.MessageType.ClientCreateUser:
-				userManager.Users.Add (e.Sender.Client.RemoteEndPoint.ToString (), new User ((string)e.Message.Content, e.Sender));
+				if (!userManager.Users.ContainsKey (e.Sender.Client.RemoteEndPoint.ToString ())) {
+					userManager.Users.Add (e.Sender.Client.RemoteEndPoint.ToString (), new User ((string)e.Message.Content, e.Sender));
+				}
 				networkingManager.Send (userManager.Users [e.Sender.Client.RemoteEndPoint.ToString ()].Client, CreateGameStateMessage ());
 				break;
 
@@ -56,7 +63,7 @@ namespace BlockPartyServer
 				break;
 
 			case NetworkMessage.MessageType.ClientResults:
-				gameResults.Add (userManager.GetUserByTcpClient (e.Sender).Name, (int)e.Message.Content);
+				gameResults.Add (userManager.Users [e.Sender.Client.RemoteEndPoint.ToString ()].Name, (int)e.Message.Content);
 				break;
 			}
 		}
@@ -72,6 +79,10 @@ namespace BlockPartyServer
 			if (state == GameState.Lobby) {
 				timeRemaining = (float)(lobbyDuration.TotalSeconds - lobbyElapsed.TotalSeconds);
 			}
+
+			if (state == GameState.Results) {
+				timeRemaining = (float)(resultsDuration.TotalSeconds - resultsElapsed.TotalSeconds);
+			}
 			
 			ServerGameStateContent content = new ServerGameStateContent (state.ToString (), timeRemaining);
 			
@@ -85,31 +96,23 @@ namespace BlockPartyServer
 		{
 			Console.WriteLine ("Setting game state to " + state.ToString ());
 			this.state = state;
-
-
 			
 			switch (state) {
+			case GameState.Lobby:
+				lobbyElapsed = TimeSpan.Zero;
+				processedResults = false;
+				networkingManager.Broadcast (CreateGameStateMessage ());														
+				break;
+
 			case GameState.Game:
 				gameElapsed = TimeSpan.Zero;
-				gameResults.Clear ();
 				networkingManager.Broadcast (CreateGameStateMessage ());
 				break;
 				
-			case GameState.Lobby:
-				lobbyElapsed = TimeSpan.Zero;
+			case GameState.Results:
+				resultsElapsed = TimeSpan.Zero;
+				gameResults.Clear ();
 				networkingManager.Broadcast (CreateGameStateMessage ());
-
-				Console.WriteLine ("gameResults.Count=" + gameResults.Count);
-				List<KeyValuePair<string, int>> sortedGameResults = gameResults.ToList ();
-				sortedGameResults.Sort ((firstPair, nextPair) => {
-					return firstPair.Value.CompareTo (nextPair) * -1; });
-				Console.WriteLine ("sortedGameResults.Count=" + sortedGameResults.Count);
-				if (sortedGameResults.Count > 0) {
-					Console.WriteLine ("Game winner is " + sortedGameResults [0].Key + " with score " + sortedGameResults [0].Value);
-					
-					networkingManager.Broadcast (new NetworkMessage (NetworkMessage.MessageType.ServerLeaderboard, sortedGameResults));
-				}
-				
 				break;
 			}
 		}
@@ -120,8 +123,24 @@ namespace BlockPartyServer
 			
 			switch (state) {
 			case GameState.Lobby:
+				if (!processedResults) {
+					Console.WriteLine ("gameResults.Count=" + gameResults.Count);
+					
+					List<KeyValuePair<string, int>> sortedGameResults = gameResults.ToList ();
+					sortedGameResults.Sort ((firstPair, nextPair) => {
+						return firstPair.Value.CompareTo (nextPair) * -1; });
+					
+					if (sortedGameResults.Count > 0) {
+						Console.WriteLine ("Game winner is " + sortedGameResults [0].Key + " with score " + sortedGameResults [0].Value);
+						
+						networkingManager.Broadcast (new NetworkMessage (NetworkMessage.MessageType.ServerLeaderboard, sortedGameResults));
+					}
+					
+					processedResults = true;
+				}
+
 				lobbyElapsed += gameTime.Elapsed;
-				
+
 				if (lobbyElapsed >= lobbyDuration) {
 					SetGameState (GameState.Game);
 				}
@@ -131,6 +150,14 @@ namespace BlockPartyServer
 				gameElapsed += gameTime.Elapsed;
 				
 				if (gameElapsed >= gameDuration) {
+					SetGameState (GameState.Results);
+				}
+				break;
+
+			case GameState.Results:
+				resultsElapsed += gameTime.Elapsed;
+
+				if (resultsElapsed >= resultsDuration) {
 					SetGameState (GameState.Lobby);
 				}
 				break;

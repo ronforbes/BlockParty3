@@ -14,12 +14,7 @@ public class BlockClearer : MonoBehaviour
     /// <summary>
     /// The block's emptying component
     /// </summary>
-    BlockEmptier emptier;
-
-    /// <summary>
-    /// The stats tracking component
-    /// </summary>
-    Stats stats;
+    BlockEmptier emptier;   
 
     /// <summary>
     /// The amount of time that the block has been waiting to clear
@@ -53,7 +48,6 @@ public class BlockClearer : MonoBehaviour
     {
         block = GetComponent<Block>();
         emptier = GetComponent<BlockEmptier>();
-        stats = GameObject.Find("Game").GetComponent<Stats>();
     }
 	
     /// <summary>
@@ -81,7 +75,7 @@ public class BlockClearer : MonoBehaviour
                 
                 Elapsed = 0.0f;
                 
-                stats.ScoreMatch();
+                StatsTracker.Instance.ScoreMatch();
             }
         }
 
