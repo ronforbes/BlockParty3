@@ -14,7 +14,7 @@ public class BlockClearer : MonoBehaviour
     /// <summary>
     /// The block's emptying component
     /// </summary>
-    BlockEmptier emptier;   
+    BlockEmptier emptier;
 
     /// <summary>
     /// The amount of time that the block has been waiting to clear

@@ -30,9 +30,10 @@ public class StatsTracker : MonoBehaviour
     public int Chains;
     public Dictionary<int, int> ChainLengths;
 
-    const int matchValue = 1;
-    const int comboValue = 10;
-    const int chainValue = 100;
+    const int raiseValue = 1;
+    const int matchValue = 10;
+    const int comboValue = 100;
+    const int chainValue = 1000;
 
     Text scoreText;
 
@@ -82,6 +83,11 @@ public class StatsTracker : MonoBehaviour
         }
     }
 
+    public void ScoreRaise()
+    {
+        Score++;
+    }
+
     public void ScoreMatch()
     {
         Score += matchValue;
@@ -90,7 +96,7 @@ public class StatsTracker : MonoBehaviour
 
     public void ScoreCombo(int comboLength)
     {
-        Score += matchValue * comboValue;
+        Score += comboValue * comboValue;
         Combos++;
 
         if (!ComboLengths.ContainsKey(comboLength))

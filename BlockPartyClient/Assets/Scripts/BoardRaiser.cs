@@ -83,6 +83,11 @@ public class BoardRaiser : MonoBehaviour
 
             board.CreateNewRow();
 
+            if (forcingRaise)
+            {
+                StatsTracker.Instance.ScoreRaise();
+            }
+
             forcingRaise = false;
         }
     }
