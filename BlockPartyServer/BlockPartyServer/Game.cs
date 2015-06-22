@@ -18,13 +18,13 @@ namespace BlockPartyServer
 		GameState state;
 
 		TimeSpan lobbyElapsed;
-		TimeSpan lobbyDuration = TimeSpan.FromSeconds (10);
+		TimeSpan lobbyDuration = TimeSpan.FromSeconds (15);
 
 		TimeSpan gameElapsed;
-		TimeSpan gameDuration = TimeSpan.FromSeconds (10);
+		TimeSpan gameDuration = TimeSpan.FromSeconds (120);
 
 		TimeSpan resultsElapsed;
-		TimeSpan resultsDuration = TimeSpan.FromSeconds (10);
+		TimeSpan resultsDuration = TimeSpan.FromSeconds (15);
 
 		Timer updateTimer;
 		const int updatesPerSecond = 1;
@@ -63,7 +63,9 @@ namespace BlockPartyServer
 				break;
 
 			case NetworkMessage.MessageType.ClientResults:
-				gameResults.Add (userManager.Users [e.Sender.Client.RemoteEndPoint.ToString ()].Name, (int)e.Message.Content);
+				if (!gameResults.ContainsKey (userManager.Users [e.Sender.Client.RemoteEndPoint.ToString ()].Name)) {
+					gameResults.Add (userManager.Users [e.Sender.Client.RemoteEndPoint.ToString ()].Name, (int)e.Message.Content);
+				}
 				break;
 			}
 		}

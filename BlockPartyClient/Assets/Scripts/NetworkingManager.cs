@@ -27,7 +27,8 @@ public class NetworkingManager : MonoBehaviour
     TcpClient client;
     NetworkStream stream;
     BinaryFormatter formatter;
-    readonly string hostname = "localhost";
+    //readonly string hostname = "localhost";
+    readonly string hostname = "52.8.64.92";
     readonly int port = 1337;
     
     public event EventHandler<MessageReceivedEventArgs> MessageReceived;
@@ -55,6 +56,9 @@ public class NetworkingManager : MonoBehaviour
                 Destroy(this.gameObject);
             }
         }
+
+        // Forces a different code path in the BinaryFormatter that doesn't rely on run-time code generation (which would break on iOS).
+        Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
     }
 
     public void Connect()

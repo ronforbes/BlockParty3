@@ -16,8 +16,11 @@ public class TimeRenderer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        int minutes = (int)(GameStateTimer.Instance.TimeRemaining / 60.0f);
-        int seconds = (int)(GameStateTimer.Instance.TimeRemaining % 60.0f);
-        text.text = String.Format("{0}:{1:00}", minutes, seconds);
+        if (GameStateTimer.Instance)
+        {
+            int minutes = (int)(GameStateTimer.Instance.TimeRemaining / 60.0f);
+            int seconds = (int)(GameStateTimer.Instance.TimeRemaining % 60.0f);
+            text.text = String.Format("{0}:{1:00}", minutes, seconds);
+        }
     }
 }

@@ -15,7 +15,10 @@ public class StatsTracker : MonoBehaviour
                 instance = GameObject.FindObjectOfType<StatsTracker>();
                 
                 // tell unity not to destroy this object when loading a new scene
-                DontDestroyOnLoad(instance.gameObject);
+                if (instance != null)
+                {
+                    DontDestroyOnLoad(instance.gameObject);
+                }
             }
             
             return instance;

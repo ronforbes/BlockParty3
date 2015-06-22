@@ -15,6 +15,9 @@ public class ScoreRenderer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        scoreText.text = StatsTracker.Instance.Score.ToString();
+        if (StatsTracker.Instance != null)
+        {
+            scoreText.text = StatsTracker.Instance.Score.ToString();
+        }
     }
 }

@@ -22,7 +22,10 @@ public class GameStateTimer : MonoBehaviour
                 instance = GameObject.FindObjectOfType<GameStateTimer>();
                 
                 // tell unity not to destroy this object when loading a new scene
-                DontDestroyOnLoad(instance.gameObject);
+                if (instance != null)
+                {
+                    DontDestroyOnLoad(instance.gameObject);
+                }
             }
             
             return instance;
