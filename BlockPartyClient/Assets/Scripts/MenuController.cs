@@ -10,6 +10,7 @@ public class MenuController : MonoBehaviour
     RawImage userImage;
     Text greetingText;
     Text userNameText;
+    Text playText;
     bool loadGame, loadLobby;
 
     // Use this for initialization
@@ -20,6 +21,7 @@ public class MenuController : MonoBehaviour
         userImage = GameObject.Find("User Image").GetComponent<RawImage>();
         greetingText = GameObject.Find("Greeting Text").GetComponent<Text>();
         userNameText = GameObject.Find("User Name Text").GetComponent<Text>();
+        playText = GameObject.Find("Play Text").GetComponent<Text>();
         
         if (!UserManager.Instance.Initialized)
         {
@@ -60,6 +62,11 @@ public class MenuController : MonoBehaviour
             userImage.gameObject.SetActive(false);
             greetingText.text = "Hello";
             userNameText.text = "Guest";
+        }
+
+        if (NetworkingManager.Instance.Connected)
+        {
+            playText.text = "Play";
         }
     }
 }

@@ -61,9 +61,15 @@ public class NetworkingManager : MonoBehaviour
         Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
     }
 
-    public void Connect()
+    public bool Connect()
     {
-        client = new TcpClient(hostname, port);
+        try
+        {
+            client = new TcpClient(hostname, port);
+        } catch (SocketException e)
+        {
+            return false;
+        }
         
         if (client.Connected)
         {
@@ -79,7 +85,11 @@ public class NetworkingManager : MonoBehaviour
             }
             
             Send(new NetworkMessage(NetworkMessage.MessageType.ClientCreateUser, UserManager.Instance.Name));
+
+            return true;
         }
+
+        return false;
     }
     
     public void Disconnect()

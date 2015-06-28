@@ -74,8 +74,11 @@ public class BlockClearer : MonoBehaviour
                 block.State = Block.BlockState.Clearing;
                 
                 Elapsed = 0.0f;
-                
-                StatsTracker.Instance.ScoreMatch();
+
+                if (StatsTracker.Instance)
+                {
+                    StatsTracker.Instance.ScoreMatch();
+                }
             }
         }
 

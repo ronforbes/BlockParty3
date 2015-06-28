@@ -85,7 +85,10 @@ public class BoardRaiser : MonoBehaviour
 
             if (forcingRaise)
             {
-                StatsTracker.Instance.ScoreRaise();
+                if (StatsTracker.Instance != null)
+                {
+                    StatsTracker.Instance.ScoreRaise();
+                }
             }
 
             forcingRaise = false;

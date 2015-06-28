@@ -155,7 +155,10 @@ public class MatchDetector : MonoBehaviour
         // handle combos
         if (matchedBlockCount > 3)
         {
-            StatsTracker.Instance.ScoreCombo(matchedBlockCount);
+            if (StatsTracker.Instance)
+            {
+                StatsTracker.Instance.ScoreCombo(matchedBlockCount);
+            }
         }
 
         if (incrementChain)

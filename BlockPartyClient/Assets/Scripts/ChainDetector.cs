@@ -15,7 +15,10 @@ public class ChainDetector : MonoBehaviour
     public void IncrementChain()
     {
         chainLength++;
-        StatsTracker.Instance.ScoreChain(chainLength);
+        if (StatsTracker.Instance != null)
+        {
+            StatsTracker.Instance.ScoreChain(chainLength);
+        }
     }
 
     void Update()
@@ -69,7 +72,10 @@ public class ChainDetector : MonoBehaviour
 
             if (chainLength > 1)
             {
-                StatsTracker.Instance.ScoreChain(chainLength);
+                if (StatsTracker.Instance != null)
+                {
+                    StatsTracker.Instance.ScoreChain(chainLength);
+                }
             }
 
             chainLength = 1;
